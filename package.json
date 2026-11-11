@@ -1,0 +1,17 @@
+{
+  "name": "final-approach",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plane spotting PWA: live arrivals, departures and military aircraft near any airport.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test 'tests/unit/*.test.mjs'",
+    "test:e2e": "node --test --test-concurrency=1 'tests/e2e/*.test.mjs'",
+    "build:airports": "NODE_USE_ENV_PROXY=1 node scripts/build-airports.mjs",
+    "capture": "NODE_USE_ENV_PROXY=1 node scripts/capture-fixture.mjs && node scripts/build-demo-fixture.mjs",
+    "icons": "node scripts/make-icons.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
