@@ -1,0 +1,96 @@
+/* Design tokens. Dark is the default; light mirrors every token. */
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+
+  --ease-spring: cubic-bezier(.2, .9, .25, 1.06);
+  --ease-out: cubic-bezier(.22, .8, .3, 1);
+  --t-fast: 140ms;
+  --t-med: 260ms;
+  --t-sheet: 420ms;
+
+  /* Dark theme */
+  --bg: #05070a;
+  --surface: rgba(18, 21, 27, 0.72);
+  --surface-solid: #12151b;
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.1);
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --text: #eef2f6;
+  --text-2: #a3acb9;
+  --text-3: #8a93a1;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --blur: saturate(160%) blur(22px);
+
+  --accent: #2ee6d6;
+  --accent-ink: #00201d;
+  --accent-soft: rgba(46, 230, 214, 0.16);
+  --inbound: #ffb547;
+  --inbound-soft: rgba(255, 181, 71, 0.16);
+  --outbound: #a98bff;
+  --outbound-soft: rgba(169, 139, 255, 0.18);
+  --danger: #ff4d5e;
+  --danger-soft: rgba(255, 77, 94, 0.18);
+  --military: #c9c27a;
+  --military-soft: rgba(201, 194, 122, 0.18);
+  --military-ink: #2b2a12;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --neutral-pill: rgba(255, 255, 255, 0.1);
+  --skeleton-a: rgba(255, 255, 255, 0.05);
+  --skeleton-b: rgba(255, 255, 255, 0.12);
+  --map-bg: #05070a;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #eef1f5;
+  --surface: rgba(250, 251, 253, 0.78);
+  --surface-solid: #fafbfd;
+  --surface-2: rgba(10, 20, 30, 0.05);
+  --surface-3: rgba(10, 20, 30, 0.09);
+  --hairline: rgba(10, 20, 30, 0.1);
+  --hairline-strong: rgba(10, 20, 30, 0.18);
+  --text: #0e141b;
+  --text-2: #4a5563;
+  --text-3: #5d6876;
+  --shadow: 0 10px 30px rgba(15, 25, 40, 0.16), 0 2px 8px rgba(15, 25, 40, 0.1);
+  --shadow-sm: 0 4px 14px rgba(15, 25, 40, 0.12);
+
+  --accent: #087f7a;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(8, 127, 122, 0.12);
+  --inbound: #a35a00;
+  --inbound-soft: rgba(217, 130, 0, 0.14);
+  --outbound: #5b3fd1;
+  --outbound-soft: rgba(91, 63, 209, 0.12);
+  --danger: #c81e32;
+  --danger-soft: rgba(200, 30, 50, 0.1);
+  --military: #5f5a12;
+  --military-soft: rgba(110, 104, 30, 0.14);
+  --military-ink: #fffbe0;
+  --ok: #0f8a5f;
+  --warn: #a86400;
+  --neutral-pill: rgba(10, 20, 30, 0.07);
+  --skeleton-a: rgba(10, 20, 30, 0.05);
+  --skeleton-b: rgba(10, 20, 30, 0.11);
+  --map-bg: #e9edf2;
+  color-scheme: light;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --surface: var(--surface-solid); }
+}

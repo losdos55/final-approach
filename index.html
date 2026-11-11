@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Final Approach</title>
+  <meta name="description" content="Live arrivals, departures and military aircraft near any airport — a plane spotting web app.">
+  <meta name="theme-color" content="#05070a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f3f5f8" media="(prefers-color-scheme: light)">
+  <meta name="color-scheme" content="dark light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Final Approach">
+  <meta name="referrer" content="no-referrer">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="./icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="./vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="./css/themes.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="modulepreload" href="./js/app.js">
+  <link rel="modulepreload" href="./vendor/maplibre-gl.mjs">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      <symbol id="i-recenter" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+      <symbol id="i-locate" viewBox="0 0 24 24"><path d="M20.5 3.5 3.8 10.3l7 2.9 2.9 7z"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3 2.8 8 12 13l9.2-5z"/><path d="m2.8 12.5 9.2 5 9.2-5"/><path d="m2.8 16.5 9.2 5 9.2-5" opacity=".55"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.5-2h4.4l1.5 2h1.8A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.5"/></symbol>
+      <symbol id="i-follow" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m12 7 3.5 9L12 14l-3.5 2z"/></symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+      <symbol id="i-plane" viewBox="0 0 24 24"><path d="M12 2.5c.9 0 1.4.8 1.4 2v5l7.1 4.1v2l-7.1-2.1v4.2l2.3 1.7v1.6L12 20.1 8.3 21v-1.6l2.3-1.7v-4.2l-7.1 2.1v-2l7.1-4.1v-5c0-1.2.5-2 1.4-2z"/></symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="app" class="app" data-detail="false">
+    <div id="map" class="map" role="region" aria-label="Live aircraft map"></div>
+    <div id="bubbles" class="bubbles" aria-live="off"></div>
+
+    <header class="topbar">
+      <div class="glass topbar-inner">
+        <label class="search">
+          <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="search" type="search" inputmode="search" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                 placeholder="Callsign, reg, type" aria-label="Search aircraft">
+          <button id="search-clear" class="icon-btn small" type="button" aria-label="Clear search" hidden>
+            <svg class="i" aria-hidden="true"><use href="#i-close"/></svg>
+          </button>
+        </label>
+        <button id="airport-chip" class="airport-chip" type="button" aria-label="Change airport">KIWA</button>
+        <button id="status" class="status" type="button" aria-label="Data status">
+          <span class="status-dot" data-state="idle"></span>
+          <span class="status-text">Starting…</span>
+        </button>
+      </div>
+      <div class="chips" role="toolbar" aria-label="Quick filters">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="military" aria-pressed="false">Military</button>
+        <button class="chip" type="button" data-filter="watchlist" aria-pressed="false">Watchlist</button>
+        <button class="chip" type="button" data-filter="arrivals" aria-pressed="false">Arrivals</button>
+        <button class="chip" type="button" data-filter="departures" aria-pressed="false">Departures</button>
+        <button class="chip" type="button" data-filter="helicopters" aria-pressed="false">Helicopters</button>
+        <button class="chip toggle" type="button" data-toggle="hideGround" aria-pressed="false">Hide ground</button>
+      </div>
+      <div id="banner" class="banner" role="status" hidden></div>
+    </header>
+
+    <nav class="fabs" aria-label="Map controls">
+      <button id="btn-recenter" class="fab glass" type="button" aria-label="Recenter on airport" title="Recenter on airport">
+        <svg class="i" aria-hidden="true"><use href="#i-recenter"/></svg>
+      </button>
+      <button id="btn-locate" class="fab glass" type="button" aria-label="Show my location" title="Show my location" aria-pressed="false">
+        <svg class="i" aria-hidden="true"><use href="#i-locate"/></svg>
+      </button>
+      <button id="btn-layers" class="fab glass" type="button" aria-label="Map style and layers" title="Map style and layers" aria-expanded="false" aria-controls="layers-pop">
+        <svg class="i" aria-hidden="true"><use href="#i-layers"/></svg>
+      </button>
+      <button id="btn-filters" class="fab glass" type="button" aria-label="Range and altitude filters" title="Range and altitude filters" aria-expanded="false" aria-controls="filters-pop">
+        <svg class="i" aria-hidden="true"><use href="#i-filter"/></svg>
+      </button>
+      <button id="btn-settings" class="fab glass" type="button" aria-label="Settings" title="Settings">
+        <svg class="i" aria-hidden="true"><use href="#i-settings"/></svg>
+      </button>
+    </nav>
+
+    <div id="layers-pop" class="popover glass" role="dialog" aria-label="Map style" hidden>
+      <h3 class="pop-title">Map</h3>
+      <div class="segmented" role="radiogroup" aria-label="Map style">
+        <button type="button" role="radio" data-style="dark" aria-checked="true">Dark</button>
+        <button type="button" role="radio" data-style="light" aria-checked="false">Light</button>
+        <button type="button" role="radio" data-style="satellite" aria-checked="false">Satellite</button>
+      </div>
+      <label class="switch-row"><span>Labels</span><input type="checkbox" class="switch" data-setting="labels"></label>
+      <label class="switch-row"><span>Trails for all aircraft</span><input type="checkbox" class="switch" data-setting="trailsAll"></label>
+      <label class="switch-row"><span>Watchlist photo bubbles</span><input type="checkbox" class="switch" data-setting="photoBubbles"></label>
+    </div>
+
+    <div id="filters-pop" class="popover glass" role="dialog" aria-label="Filters" hidden>
+      <h3 class="pop-title">Range</h3>
+      <label class="slider-row">
+        <span class="slider-label">Radius <output id="radius-out" class="tnum">15 nm</output></span>
+        <input id="radius" type="range" min="5" max="50" step="1" value="15" aria-label="Radius">
+      </label>
+      <label class="slider-row">
+        <span class="slider-label">Altitude ceiling <output id="ceiling-out" class="tnum">8,000 ft</output></span>
+        <input id="ceiling" type="range" min="1000" max="20000" step="500" value="8000" aria-label="Altitude ceiling above ground">
+      </label>
+      <p class="hint">Arrivals and departures are counted below the ceiling (above ground level).</p>
+    </div>
+
+    <section id="sheet" class="sheet glass" data-detent="peek" aria-label="Spotting board">
+      <div class="sheet-grab" id="sheet-grab">
+        <div class="handle" aria-hidden="true"></div>
+        <button id="sheet-toggle" class="sr-only" type="button">Expand panel</button>
+        <div class="sheet-summary" id="summary" aria-live="polite">Looking for aircraft…</div>
+      </div>
+      <div class="sheet-view" id="view-board">
+        <div class="tabs" role="tablist" aria-label="Lists">
+          <button class="tab" role="tab" type="button" data-tab="arrivals" aria-selected="true" id="tab-arrivals">Arrivals <span class="count tnum"></span></button>
+          <button class="tab" role="tab" type="button" data-tab="departures" aria-selected="false" id="tab-departures">Departures <span class="count tnum"></span></button>
+          <button class="tab" role="tab" type="button" data-tab="nearby" aria-selected="false" id="tab-nearby">Nearby <span class="count tnum"></span></button>
+          <button class="tab" role="tab" type="button" data-tab="watchlist" aria-selected="false" id="tab-watchlist">Watchlist <span class="count tnum"></span></button>
+        </div>
+        <div class="sheet-scroll" id="list" role="tabpanel" aria-labelledby="tab-arrivals"></div>
+      </div>
+      <div class="sheet-view" id="view-detail" hidden>
+        <div class="sheet-scroll" id="detail"></div>
+      </div>
+    </section>
+
+    <div id="settings" class="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden></div>
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+  </div>
+
+  <noscript><p class="noscript">Final Approach needs JavaScript to show live aircraft.</p></noscript>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
