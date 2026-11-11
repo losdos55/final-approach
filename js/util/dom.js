@@ -36,8 +36,8 @@ export function tweenText(el, value, format, ms = 450) {
 /** SVG sparkline path for values. */
 export function sparkline(values, w = 280, hgt = 56, pad = 4) {
   if (!values || values.length < 2) return '';
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
+  const max = Math.max(...values);
+  const min = Math.min(...values);
   const span = Math.max(1, max - min);
   const pts = values.map((v, i) => [
     pad + (i / (values.length - 1)) * (w - pad * 2),

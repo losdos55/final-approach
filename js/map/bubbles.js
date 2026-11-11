@@ -24,7 +24,7 @@ export function createBubbles({ map, container, photos, onOpen, getUnits }) {
       ? `<a class="bubble-credit" href="${esc(photo.link)}" target="_blank" rel="noopener">Photo: ${esc(photo.photographer)} / planespotters.net</a>`
       : '';
     return `
-      <div class="bubble-main" role="button" tabindex="0" aria-label="Open details for ${esc(ac.callsign || ac.reg || ac.hex)}">
+      <div class="bubble-main" role="button" tabindex="0" aria-label="${esc(title)}, ${esc(line2)}. Open details">
         ${media}
         <span class="bubble-text">
           <span class="bubble-title">${esc(title)}</span>

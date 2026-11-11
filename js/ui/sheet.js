@@ -47,6 +47,8 @@ export function createSheet(el, { onChange } = {}) {
     if (e.target.closest('button, a, input') && !e.target.closest('.tab, #sheet-toggle')) return;
     const o = offsets();
     drag = { startY: e.clientY, base: o[detent], y: o[detent], moved: false, samples: [[e.timeStamp, e.clientY]], id: e.pointerId, target: e.currentTarget };
+    // Capture right away so a fast drag that leaves the handle keeps tracking.
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ignore */ }
   }
   function onMove(e) {
     if (!drag || e.pointerId !== drag.id) return;
@@ -54,7 +56,6 @@ export function createSheet(el, { onChange } = {}) {
     if (!drag.moved && Math.abs(dy) < 6) return;
     if (!drag.moved) {
       drag.moved = true;
-      try { drag.target.setPointerCapture(e.pointerId); } catch { /* ignore */ }
       el.classList.add('dragging');
     }
     const o = offsets();
@@ -72,7 +73,9 @@ export function createSheet(el, { onChange } = {}) {
     drag = null;
     el.classList.remove('dragging');
     if (!d.moved) return; // let click handlers run
-    const s = d.samples;
+    // Velocity from the last ~100 ms only, so a pause before release isn't a flick.
+    const s = d.samples.filter(([t]) => e.timeStamp - t <= 100);
+    if (!s.length) s.push([e.timeStamp, e.clientY]);
     const [t0, y0] = s[0];
     const [t1, y1] = s[s.length - 1];
     const v = t1 > t0 ? (y1 - y0) / (t1 - t0) : 0; // px/ms, + = downward

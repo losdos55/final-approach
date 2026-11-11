@@ -9,20 +9,32 @@ export class HostLimiter {
     this.minIntervalMs = minIntervalMs;
     this.now = now;
     this.sleep = sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
-    this.next = new Map(); // host -> earliest next start time
+    this.chains = new Map(); // host -> promise of the previous acquisition
+    this.last = new Map(); // host -> time the previous request actually started
     this.log = []; // [{host, t}] recent request starts, for diagnostics/tests
   }
 
-  /** Reserve the next slot for `host`; resolves when it's our turn. */
-  async acquire(host) {
-    const now = this.now();
-    const at = Math.max(now, this.next.get(host) ?? 0);
-    this.next.set(host, at + this.minIntervalMs);
-    if (at > now) await this.sleep(at - now);
-    const t = this.now();
-    this.log.push({ host, t });
-    if (this.log.length > 200) this.log.splice(0, this.log.length - 200);
-    return t;
+  /**
+   * Wait for our turn. Callers to the same host are served one at a time, and
+   * each waits until `minIntervalMs` after the previous one *actually* started,
+   * re-checking after every sleep, so a blocked main thread can't cause bursts.
+   */
+  acquire(host) {
+    const prev = this.chains.get(host) ?? Promise.resolve();
+    const mine = prev.then(async () => {
+      for (;;) {
+        const wait = (this.last.get(host) ?? -Infinity) + this.minIntervalMs - this.now();
+        if (wait <= 0) break;
+        await this.sleep(wait);
+      }
+      const t = this.now();
+      this.last.set(host, t);
+      this.log.push({ host, t });
+      if (this.log.length > 200) this.log.splice(0, this.log.length - 200);
+      return t;
+    });
+    this.chains.set(host, mine.catch(() => {}));
+    return mine;
   }
 
   async run(host, fn) {

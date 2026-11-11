@@ -98,3 +98,16 @@ proxy/              cloudflare-worker.js
   photo and route caches (with in-memory fallback when IDB is unavailable).
 - **Service worker**: versioned caches, cache-first app shell, network-only for live APIs,
   stale-while-revalidate for CARTO/Esri tiles capped at ~400 entries.
+
+## 3. Findings during testing
+
+- **Limiter bug found and fixed**: the first limiter reserved future time slots; when the main
+  thread was blocked (map rendering), queued requests woke together and fired ~40 ms apart.
+  It now chains requests per host and measures against the previous request's *actual* start.
+  The e2e test timestamps every `fetch()` inside the page to verify ≥ 1000 ms gaps.
+- **planespotters.net** returned CORS-less 403s to headless Chromium. Failed lookups are now
+  remembered in memory for 15 minutes (never cached in IndexedDB) and the UI shows a placeholder.
+- Playwright's `route.fulfill` bypasses CORS, so the "no proxy" e2e test emulates the browser's
+  CORS rejection with `route.abort()` (both surface as a `TypeError` from `fetch`).
+- Live run through the worker code: airplanes.live 403 → automatic fallback to adsb.lol;
+  counts matched a direct query for the same area.

@@ -24,6 +24,7 @@
   --bg: #05070a;
   --surface: rgba(18, 21, 27, 0.72);
   --surface-solid: #12151b;
+  --surface-chip: rgba(18, 21, 27, 0.86);
   --surface-2: rgba(255, 255, 255, 0.06);
   --surface-3: rgba(255, 255, 255, 0.1);
   --hairline: rgba(255, 255, 255, 0.09);
@@ -60,6 +61,7 @@
   --bg: #eef1f5;
   --surface: rgba(250, 251, 253, 0.78);
   --surface-solid: #fafbfd;
+  --surface-chip: rgba(250, 251, 253, 0.9);
   --surface-2: rgba(10, 20, 30, 0.05);
   --surface-3: rgba(10, 20, 30, 0.09);
   --hairline: rgba(10, 20, 30, 0.1);

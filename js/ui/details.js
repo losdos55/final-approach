@@ -82,7 +82,8 @@ export function createDetails({ el, photos, actions }) {
       hero.innerHTML = '<div class="shimmer" style="position:absolute;inset:0"></div>';
       q('credit').innerHTML = '';
     } else if (photo.none) {
-      hero.innerHTML = `${silhouetteSVG(t.ac.cls, { size: 96 })}<span class="no-photo">No photo on planespotters.net yet</span>`;
+      const why = photo.failed ? 'Photo service unavailable right now' : 'No photo on planespotters.net yet';
+      hero.innerHTML = `${silhouetteSVG(t.ac.cls, { size: 96 })}<span class="no-photo">${why}</span>`;
       q('credit').innerHTML = '';
       q('pslink').hidden = true;
     } else {
@@ -110,7 +111,7 @@ export function createDetails({ el, photos, actions }) {
     q('title').textContent = ac.desc || ac.type || 'Unknown type';
     const parts = [
       ac.callsign && `<b>${esc(ac.callsign)}</b>`,
-      ac.reg && `<span>${esc(ac.reg)}</span>`,
+      ac.reg && ac.reg !== ac.callsign && `<span>${esc(ac.reg)}</span>`,
       ac.operator && `<span>${esc(ac.operator)}</span>`,
       ac.year && `<span>Built ${esc(ac.year)}</span>`,
       ac.military && '<span class="badge-mil">MILITARY</span>',
@@ -134,7 +135,7 @@ export function createDetails({ el, photos, actions }) {
     tweenText(v('gs'), ac.gs, (x) => formatSpeed(x, units));
     tweenText(v('vr'), ac.vRate, (x) => formatVRate(x == null ? x : Math.round(x / 32) * 32, units));
     v('hdg').textContent = formatHeading(ac.heading);
-    tweenText(v('dist'), t.spot.distNm, (x) => `${formatDistance(x, units)} ${formatHeading(t.spot.bearingFromField).replace('°', '°')}`);
+    tweenText(v('dist'), t.spot.distNm, (x) => `${formatDistance(x, units)} ${formatHeading(t.spot.bearingFromField)}`);
     const userTile = el.querySelector('[data-tile="user"]');
     if (user) {
       userTile.hidden = false;

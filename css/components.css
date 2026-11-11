@@ -109,7 +109,7 @@
   height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--surface-chip, var(--surface));
   -webkit-backdrop-filter: var(--blur);
   backdrop-filter: var(--blur);
   border: 1px solid var(--hairline);
@@ -573,7 +573,7 @@ input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border: 0; bo
 .toasts {
   position: absolute;
   left: 50%;
-  top: calc(var(--safe-t) + 120px);
+  top: calc(var(--safe-t) + 8px);
   transform: translateX(-50%);
   z-index: 60;
   display: flex;

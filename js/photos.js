@@ -12,6 +12,10 @@ import { fetchJSON } from './providers/index.js';
 const HOST = 'api.planespotters.net';
 const TTL = 7 * 24 * 60 * 60 * 1000;
 const NONE = { none: true };
+// Lookups that failed (network/CORS/403/5xx) aren't cached in IndexedDB, but we
+// remember them in memory for a while so we don't retry on every poll.
+const FAILED = { none: true, failed: true };
+const RETRY_FAILED_MS = 15 * 60 * 1000;
 
 /** Turn the API response into the small record we keep. */
 export function parsePhotos(json) {
@@ -29,11 +33,15 @@ export function createPhotoService({ onPhoto } = {}) {
   const queue = []; // [{hex, reg, priority}]
   const inflight = new Map(); // hex -> promise
   const waiters = new Map(); // hex -> [resolve]
+  const failedAt = new Map(); // hex -> time of last failed lookup
   let running = false;
 
   /** Synchronous view of what we know: undefined (unknown), NONE, or a photo. */
   function peek(hex) {
-    return cachePeek('photos', hex);
+    const cached = cachePeek('photos', hex);
+    if (cached !== undefined) return cached;
+    const f = failedAt.get(hex);
+    return f && Date.now() - f < RETRY_FAILED_MS ? FAILED : undefined;
   }
 
   /**
@@ -109,9 +117,14 @@ export function createPhotoService({ onPhoto } = {}) {
         result = await lookup(item);
         await cacheSet('photos', item.hex, result);
       } catch (err) {
-        // Don't cache transient failures; just report "nothing yet".
-        result = err?.status === 404 ? NONE : undefined;
-        if (result) await cacheSet('photos', item.hex, result);
+        if (err?.status === 404) {
+          result = NONE;
+          await cacheSet('photos', item.hex, result);
+        } else {
+          // Transient or blocked: show the placeholder, retry much later.
+          failedAt.set(item.hex, Date.now());
+          result = FAILED;
+        }
         if (err?.status === 429) await new Promise((r) => setTimeout(r, 5000));
       }
       waiters.get(item.hex)?.(result);

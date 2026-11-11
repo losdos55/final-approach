@@ -36,7 +36,7 @@ function rowHTML(t, units) {
   const s = t.spot;
   const title = ac.desc || ac.type || 'Unknown type';
   const ident = ac.callsign || ac.reg || ac.hex.toUpperCase();
-  const second = [ac.callsign && ac.reg ? ac.reg : '', ac.operator].filter(Boolean).join(' · ');
+  const second = [ac.callsign && ac.reg && ac.reg !== ac.callsign ? ac.reg : '', ac.operator].filter(Boolean).join(' · ');
   const alt = ac.onGround ? 'Ground' : formatAltitude(ac.alt, units);
   const route = routeLabel(t.route);
   const pillCls = s.status;
